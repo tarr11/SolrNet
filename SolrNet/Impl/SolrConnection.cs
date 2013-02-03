@@ -55,6 +55,20 @@ namespace SolrNet.Impl {
             HttpWebRequestFactory = new HttpWebRequestFactory();
         }
 
+			/// <summary>
+			/// Basic Auth
+			/// </summary>
+			/// <param name="serverURL"></param>
+			/// <param name="username"></param>
+			/// <param name="password"></param>
+				public SolrConnection(string serverURL, string username, string password) {
+            ServerURL = serverURL;
+            Timeout = -1;
+            Cache = new NullCache();
+            HttpWebRequestFactory = new BasicAuthHttpWebRequestFactory(username, password);
+
+				}
+
         /// <summary>
         /// URL to Solr
         /// </summary>

@@ -32,6 +32,7 @@ using SolrNet.Mapping.Validation;
 using SolrNet.Mapping.Validation.Rules;
 using SolrNet.Schema;
 using SolrNet.Utils;
+using HttpWebAdapters;
 
 namespace Ninject.Integration.SolrNet {
     /// <summary>
@@ -39,6 +40,9 @@ namespace Ninject.Integration.SolrNet {
     /// </summary>
     public class SolrNetModule : NinjectModule {
         private readonly string serverURL;
+				private readonly string userName;
+				private readonly string password;
+			 
         private readonly List<SolrCore> cores = new List<SolrCore>();
         private const string CoreId = "CoreId";
 
@@ -54,6 +58,18 @@ namespace Ninject.Integration.SolrNet {
         public SolrNetModule(string serverURL) {
             this.serverURL = serverURL;
         }
+
+			/// <summary>
+			/// Configures SolrNet for Basic Authentication
+			/// </summary>
+			/// <param name="serverURL"></param>
+			/// <param name="username"></param>
+			/// <param name="password"></param>
+				public SolrNetModule(string serverURL, string username, string password) {
+					this.serverURL = serverURL;
+					this.userName = username;
+					this.password = password;
+				}
 
         /// <summary>
         /// Configures SolrNet in a Ninject kernel with multiple servers/cores
@@ -200,7 +216,11 @@ namespace Ninject.Integration.SolrNet {
             }
             else {
                 //Bind single type to a single url, prevent breaking existing functionality
-                Bind<ISolrConnection>().ToConstant(new SolrConnection(serverURL));
+							if (!string.IsNullOrEmpty(userName)) {
+								Bind<ISolrConnection>().ToConstant(new SolrConnection(serverURL, userName, password));
+							} else {
+								Bind<ISolrConnection>().ToConstant(new SolrConnection(serverURL));
+							}
                 Bind(typeof (ISolrQueryExecuter<>)).To(typeof (SolrQueryExecuter<>));
                 Bind(typeof (ISolrBasicOperations<>)).To(typeof (SolrBasicServer<>));
                 Bind(typeof (ISolrBasicReadOnlyOperations<>)).To(typeof (SolrBasicServer<>));
