@@ -97,6 +97,15 @@ namespace SolrNet {
             Init<T>(connection);
         }
 
+				public static void Init<T>(string serverURL, string userName, string password) {
+            var connection = new SolrConnection(serverURL, userName, password) {
+                //Cache = Container.GetInstance<ISolrCache>(),
+            };
+
+            Init<T>(connection);
+
+				}
+
         /// <summary>
         /// Initializes SolrNet with the built-in container
         /// </summary>
